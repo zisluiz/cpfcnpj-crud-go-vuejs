@@ -1,0 +1,51 @@
+definitions:
+  application.NewDocumentInput:
+    properties:
+      cpfCnpj:
+        type: string
+      name:
+        type: string
+    type: object
+  application.Response:
+    properties:
+      body:
+        type: object
+      status:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /api/documents:
+    post:
+      consumes:
+      - application/json
+      description: add by json document
+      parameters:
+      - description: Add name
+        in: body
+        name: name
+        required: true
+        schema:
+          $ref: '#/definitions/application.NewDocumentInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/application.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/application.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/application.Response'
+      summary: Create an document
+      tags:
+      - documents
+swagger: "2.0"
