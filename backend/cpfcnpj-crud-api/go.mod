@@ -1,16 +1,28 @@
-module zisluiz.com/cnpj-crud-api
+module zisluiz.com/cpfcnpj-crud-api
 
 go 1.16
 
-replace zisluiz.com/cnpj-crud-api/docs => ../docs
+replace zisluiz.com/cpfcnpj-crud-api/docs => ../docs
 
-replace zisluiz.com/cnpj-crud-api/application => ../application
+replace zisluiz.com/cpfcnpj-crud-api/http/adapter => ../http/adapter
 
-replace zisluiz.com/cnpj-crud-api/api/adapter => ../api/adapter
+replace zisluiz.com/cpfcnpj-crud-api/command/application => ../command/application
 
-replace zisluiz.com/cnpj-crud-api/domain/command/error => ../domain/command/error
+replace zisluiz.com/cpfcnpj-crud-api/command/domain/exception => ../command/domain/exception
 
-replace zisluiz.com/cnpj-crud-api/domain/command/model => ../domain/command/model
+replace zisluiz.com/cpfcnpj-crud-api/command/domain/model => ../command/domain/model
+
+replace zisluiz.com/cpfcnpj-crud-api/command/domain/repository => ../command/domain/repository
+
+replace zisluiz.com/cpfcnpj-crud-api/command/domain/factory => ../command/domain/factory
+
+replace zisluiz.com/cpfcnpj-crud-api/infra/config => ../infra/config
+
+replace zisluiz.com/cpfcnpj-crud-api/infra/data => ../infra/data
+
+replace zisluiz.com/cpfcnpj-crud-api/infra/middleware => ../infra/middleware
+
+replace zisluiz.com/cpfcnpj-crud-api/test/mock => ../test/mock
 
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
@@ -27,6 +39,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/swaggo/echo-swagger v1.1.0
 	github.com/swaggo/swag v1.7.0
+	go.mongodb.org/mongo-driver v1.5.1
 	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4 // indirect
 	golang.org/x/sys v0.0.0-20210403161142-5e06dd20ab57 // indirect
 	golang.org/x/text v0.3.6 // indirect

@@ -6,6 +6,11 @@ import (
 	"strconv"
 )
 
+const (
+	Cpf  = "cpf"
+	Cnpj = "cnpj"
+)
+
 var (
 	cpfFirstDigitTable   = []int{10, 9, 8, 7, 6, 5, 4, 3, 2}
 	cpfSecondDigitTable  = []int{11, 10, 9, 8, 7, 6, 5, 4, 3, 2}
@@ -15,9 +20,10 @@ var (
 	cnpjRegExp, _        = regexp.Compile(`^0{14}$|^1{14}$|^2{14}$|^3{14}$|^4{14}$|^5{14}$|^6{14}$|^7{14}$|^8{14}$|^9{14}$`)
 )
 
-type Identity interface {
+type IdentityNumber interface {
 	Value() string
 	IsValid() bool
+	Type() string
 }
 
 type identityValue struct {
@@ -109,11 +115,19 @@ func (a identityValue) Value() string {
 	return a.value
 }
 
-func NewCpf(value string) Identity {
+func (a IdentityCpf) Type() string {
+	return Cpf
+}
+
+func (a IdentityCnpj) Type() string {
+	return Cnpj
+}
+
+func NewCpf(value string) IdentityNumber {
 	return &IdentityCpf{identityValue{value: value}}
 }
 
-func NewCnpj(value string) Identity {
+func NewCnpj(value string) IdentityNumber {
 	return &IdentityCnpj{identityValue{value: value}}
 }
 

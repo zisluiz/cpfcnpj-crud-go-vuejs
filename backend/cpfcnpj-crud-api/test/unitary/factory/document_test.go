@@ -3,8 +3,8 @@ package model
 import (
 	"testing"
 
-	"zisluiz.com/cnpj-crud-api/domain/command/factory"
-	"zisluiz.com/cnpj-crud-api/domain/command/model"
+	"zisluiz.com/cpfcnpj-crud-api/command/domain/factory"
+	"zisluiz.com/cpfcnpj-crud-api/command/domain/model"
 )
 
 func TestDocumentCreation(t *testing.T) {
@@ -16,7 +16,7 @@ func TestDocumentCreation(t *testing.T) {
 	}
 	for _, c := range cases {
 		var identity, _ = factory.NewIdentityCpf(c.identityValue)
-		var document = model.NewDocument(c.name, identity)
+		var document = model.NewDocument("", c.name, identity)
 
 		if document.Name != c.name {
 			t.Errorf("Document name (%q) == %q, want %q", c.name, document.Name, c.name)

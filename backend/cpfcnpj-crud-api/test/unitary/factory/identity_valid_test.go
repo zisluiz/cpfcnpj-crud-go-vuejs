@@ -3,7 +3,7 @@ package model
 import (
 	"testing"
 
-	"zisluiz.com/cnpj-crud-api/domain/command/factory"
+	"zisluiz.com/cpfcnpj-crud-api/command/domain/factory"
 )
 
 func TestCpfValid(t *testing.T) {

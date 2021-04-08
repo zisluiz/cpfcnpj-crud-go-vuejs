@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"zisluiz.com/cnpj-crud-api/domain/command/factory"
-	"zisluiz.com/cnpj-crud-api/domain/command/model"
+	"zisluiz.com/cpfcnpj-crud-api/command/domain/factory"
+	"zisluiz.com/cpfcnpj-crud-api/command/domain/model"
 )
 
 func TestCpfFactory(t *testing.T) {
@@ -26,10 +26,10 @@ func TestCpfFactory(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		var _, validation = factory.NewIdentityCpf(c.in)
+		var _, validations = factory.NewIdentityCpf(c.in)
 
-		if c.valid && validation != nil {
-			t.Errorf("Cpf (%q) is valid, but factory not accepted: %q", c.in, validation.Message())
+		if c.valid && validations != nil {
+			t.Errorf("Cpf (%q) is valid, but factory not accepted: %q", c.in, validations.Messages[0].Description())
 		}
 	}
 }
@@ -52,10 +52,10 @@ func TestCnpjFactory(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		var _, validation = factory.NewIdentityCnpj(c.in)
+		var _, validations = factory.NewIdentityCnpj(c.in)
 
-		if c.valid && validation != nil {
-			t.Errorf("Cnpj (%q) is valid, but factory not accepted: %q", c.in, validation.Message())
+		if c.valid && validations != nil {
+			t.Errorf("Cnpj (%q) is valid, but factory not accepted: %q", c.in, validations.Messages[0].Description())
 		}
 	}
 }

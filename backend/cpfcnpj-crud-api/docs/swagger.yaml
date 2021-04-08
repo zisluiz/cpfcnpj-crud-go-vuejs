@@ -1,20 +1,48 @@
+basePath: /api/
 definitions:
-  application.NewDocumentInput:
+  application.DocumentViewModel:
     properties:
-      cpfCnpj:
+      identityNumber:
+        type: string
+      identityType:
         type: string
       name:
         type: string
     type: object
-  application.Response:
+  application.EditDocumentInputModel:
+    properties:
+      identityNumber:
+        type: string
+      name:
+        type: string
+    type: object
+  application.NewDocumentInputModel:
+    properties:
+      identityNumber:
+        type: string
+      name:
+        type: string
+    type: object
+  data.Response:
     properties:
       body:
         type: object
       status:
         type: integer
     type: object
+host: localhost:8080
 info:
-  contact: {}
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server celler server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger CPF/CNPJ API
+  version: "1.0"
 paths:
   /api/documents:
     post:
@@ -22,30 +50,148 @@ paths:
       - application/json
       description: add by json document
       parameters:
-      - description: Add name
+      - description: Add new document
         in: body
-        name: name
+        name: Document
         required: true
         schema:
-          $ref: '#/definitions/application.NewDocumentInput'
+          $ref: '#/definitions/application.NewDocumentInputModel'
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: ""
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/application.Response'
+            $ref: '#/definitions/data.Response'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/application.Response'
+            $ref: '#/definitions/data.Response'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/application.Response'
+            $ref: '#/definitions/data.Response'
       summary: Create an document
       tags:
       - documents
+  /api/documents/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: add by json document
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/data.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/data.Response'
+      summary: Delete an document
+      tags:
+      - documents
+    get:
+      consumes:
+      - application/json
+      description: add by json document
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/application.DocumentViewModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/data.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/data.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/data.Response'
+      summary: Get an document
+      tags:
+      - documents
+    put:
+      consumes:
+      - application/json
+      description: add by json document
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update document
+        in: body
+        name: Document
+        required: true
+        schema:
+          $ref: '#/definitions/application.EditDocumentInputModel'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/data.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/data.Response'
+      summary: Create an document
+      tags:
+      - documents
+  /stats:
+    get:
+      consumes:
+      - application/json
+      description: add by json document
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/data.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/data.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/data.Response'
+      summary: Get an document
+      tags:
+      - stats
 swagger: "2.0"

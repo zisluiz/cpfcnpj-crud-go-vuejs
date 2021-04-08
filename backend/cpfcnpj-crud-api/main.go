@@ -6,9 +6,12 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	"zisluiz.com/cnpj-crud-api/api/routes"
-	_ "zisluiz.com/cnpj-crud-api/docs"
+	_ "zisluiz.com/cpfcnpj-crud-api/docs"
+	"zisluiz.com/cpfcnpj-crud-api/http/routes"
+	appMiddleware "zisluiz.com/cpfcnpj-crud-api/infra/middleware"
 )
+
+//To generate refresh docs: swag init -g http/routes/document.go
 
 // @title Swagger CPF/CNPJ API
 // @version 1.0
@@ -26,17 +29,23 @@ import (
 // @BasePath /api/
 
 func main() {
+	serverStats := appMiddleware.NewStats()
 	// Echo instance
 	e := echo.New()
 
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(serverStats.Process)
 
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
-	var group = e.Group("/api")
+	// Stats
+	statsRoute := &routes.StatsRoute{Stats: serverStats}
+	statsRoute.BindStatsRoute(e)
 
+	// Api
+	var group = e.Group("/api")
 	routes.BindRoute(group)
 
 	// Start server

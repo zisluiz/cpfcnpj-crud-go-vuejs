@@ -17,5 +17,7 @@ __debug_bin
 
 .vscode/
 
+.dbdata/
+
 # Dependency directories (remove the comment below to include it)
 # vendor/

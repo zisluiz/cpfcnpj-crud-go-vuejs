@@ -6,6 +6,8 @@ services:
       dockerfile: docker/go.Dockerfile
     container_name: cpfcnpj-crud-api
     working_dir: /go/src/app
+    depends_on:
+      - mongodb
     volumes:
       - ./backend/cpfcnpj-crud-api:/go/src/app
     ports:
@@ -14,11 +16,42 @@ services:
     #command: sh -c "go get -d -v ./... && go install -v ./... && go build -o dist/main && go run dist/main"
     #command: sh -c "go run main.go"
     #command: sh -c "go get -u github.com/cosmtrek/air && air -c .air.toml"
-    #command: sh -c "go get -d -v ./... && go install -v ./... && go get -u github.com/cosmtrek/air && air -c .air.toml"
-    command: sh -c "go get -d -v ./... && go install -v ./... && dlv debug /go/src/app --headless --listen=:2345 --api-version=2 --log"
+    command: sh -c "go get -d -v ./... && go install -v ./... && go get -u github.com/cosmtrek/air && air -c .air.toml"
+    #command: sh -c "go get -d -v ./... && go install -v ./... && dlv debug /go/src/app --headless --listen=:2345 --api-version=2 --log"
     environment:
       - TZ=UTC+3
       - API_PORT=8080
+      - MONGODB_CONNECTION=mongodb://root:123456@mongodb:27017/
+      - MONGODB_DATABASE_NAME=cpfcnpj
+
+  mongodb:
+    build:
+      context: .
+      dockerfile: docker/mongo.Dockerfile
+    container_name: cpfcnpj-crud-mongo
+    volumes:
+      - ./.dbdata:/data/db
+    ports:
+      - "27017:27017"
+    environment:
+      - TZ=UTC+3
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=123456
+      - MONGO_INITDB_DATABASE=cpfcnpj
+
+  mongodb-express:
+    image: mongo-express
+    volumes:
+      - ./backend/cpfcnpj-crud-api:/go/src/app
+    depends_on:
+      - mongodb
+    ports:
+      - "8081:8081"
+    environment:
+      - TZ=UTC+3
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=123456
 
   #web:
   #  image: node:15.11.0-alpine

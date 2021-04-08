@@ -3,7 +3,7 @@ package model
 import (
 	"testing"
 
-	"zisluiz.com/cnpj-crud-api/domain/command/model"
+	"zisluiz.com/cpfcnpj-crud-api/command/domain/model"
 )
 
 func TestIdentityCpfCreation(t *testing.T) {
