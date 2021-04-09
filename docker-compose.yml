@@ -13,8 +13,8 @@ services:
     ports:
       - "8080:8080"
       - "2345:2345"
-    #command: sh -c "go get -d -v ./... && go install -v ./... && go build -o dist/main && go run dist/main" #simple build and run
     command: sh -c "go get -d -v ./... && go install -v ./... && go get -u github.com/cosmtrek/air && air -c .air.toml" # run with live reloading
+    #command: sh -c "go get -d -v ./... && go install -v ./... && go build -o ./dist/main && go run ./dist/main" #simple build and run
     #command: sh -c "go get -d -v ./... && go install -v ./... && dlv debug /go/src/app --headless --listen=:2345 --api-version=2 --log" # run for debug enabled
     environment:
       - TZ=UTC+3
