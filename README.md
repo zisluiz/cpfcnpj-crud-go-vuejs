@@ -10,7 +10,7 @@ The page list allow multiselection to block/unblock more than one documents per 
 
 - Database: Mongodb
 - Backend: Golang, Echo, Swaggo and Mongo-driver
-- Frontend: Vue.js 3, Typescript, PrimeVue 3 (at moment, the only one framework with some useful ui components to support Vue.js 3)
+- Frontend: Vue.js 3, Typescript, PrimeVue 3 (at moment, the only one framework with some useful ui components with Vue.js 3)
 
 ## Simple domain diagram
 
