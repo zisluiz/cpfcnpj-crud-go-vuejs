@@ -1,5 +1,5 @@
 import Query from "@/model/Query";
-import Response from "@/model/Response";
+import Response from "@/model/PaginatedResponse";
 import Messages from "@/model/Messages";
 import Document from "@/model/Document";
 import axios from "axios";

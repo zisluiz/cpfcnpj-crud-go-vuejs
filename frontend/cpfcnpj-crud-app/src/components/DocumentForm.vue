@@ -57,13 +57,10 @@ export default class DocumentForm extends Vue {
   identityMask = this.checkMask()
  
   created() {
-    console.log('created')
     this.toast = useToast();
   }  
 
   mounted() {
-    console.log('mounted')
-
     if (this.$route.params.id) {
       
       this.documentService.get(this.$route.params.id as string).then((data: Document | Messages) => {        

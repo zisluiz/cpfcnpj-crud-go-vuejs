@@ -8,40 +8,40 @@
         <div class="p-fluid p-formgrid p-grid">
             <div class="p-field p-col-12 p-lg-4">
                 <label for="filterName" class="adjust-lineheight">Nome</label>
-                <InputText id="filterName" type="text" placeholder="Nome" v-model="filterName" />
+                <InputText id="filterName" type="text" placeholder="Nome" v-model="filterName" @keyup.enter="onFilter" />
             </div>
             <div class="p-field p-col-12 p-lg-4">
               <div class="p-formgroup-inline">
                   <div class="p-field-checkbox adjust-lineheight">
-                      <RadioButton id="rb-cpf" name="cpfcnpj" value="cpf" v-model="filterIdentityType" />
+                      <RadioButton id="rb-cpf" name="cpfcnpj" value="cpf" v-model="filterIdentityType" v-on:change="changedOptionIdentity" />
                       <label for="rb-cpf">CPF</label>
                   </div>
                   <div class="p-field-checkbox">
-                      <RadioButton id="rb-cnpj" name="cpfcnpj" value="cnpj" v-model="filterIdentityType" />
+                      <RadioButton id="rb-cnpj" name="cpfcnpj" value="cnpj" v-model="filterIdentityType" v-on:change="changedOptionIdentity" />
                       <label for="rb-cnpj">CNPJ</label>
                   </div>
               </div>  
-              <InputText id="filterCpfCnpj" type="text" placeholder="CPF/CNPJ" v-model="filterIdentityNumber" />
+              <InputMask id="filterCpfCnpj" type="text" placeholder="Documento" v-model="filterIdentityNumber" :mask="identityMask" @keydown.enter="onFilter" />
             </div>  
             <div class="p-field p-col-12 p-lg-4">
                <label class="adjust-lineheight">Bloqueados</label>
               <div class="p-formgroup-inline adjust-options-blocked">
                   <div class="p-field-checkbox">
-                      <RadioButton id="rb-blocked-all" name="blocked" value="all" v-model="filterBlockeds" />
+                      <RadioButton id="rb-blocked-all" name="blocked" value="all" v-model="filterBlockeds" v-on:change="onFilter" />
                       <label for="city7">Todos</label>
                   </div>
                   <div class="p-field-checkbox">
-                      <RadioButton id="rb-blocked-yes" name="blocked" value="yes" v-model="filterBlockeds" />
+                      <RadioButton id="rb-blocked-yes" name="blocked" value="yes" v-model="filterBlockeds" v-on:change="onFilter" />
                       <label for="rb-blocked-yes">Sim</label>
                   </div>
                   <div class="p-field-checkbox">
-                      <RadioButton id="rb-blocked-no" name="blocked" value="no" v-model="filterBlockeds" />
+                      <RadioButton id="rb-blocked-no" name="blocked" value="no" v-model="filterBlockeds" v-on:change="onFilter" />
                       <label for="rb-blocked-no">Não</label>
                   </div>                  
               </div> 
             </div>              
             <div class="p-field p-col-12 p-lg-offset-8 p-lg-4">
-                <Button type="button" label="Pesquisar" v-on:click="onFilter()" />
+                <Button type="button" label="Pesquisar" v-on:click="onFilter" />
             </div>                      
         </div> 
         </template>
@@ -55,7 +55,7 @@
 
         <Toolbar class="p-mb-2">
             <template #left>
-                <Button label="Novo" icon="pi pi-plus" class="p-button-success p-mr-2" @click="openNew" />
+                <Button label="Novo" icon="pi pi-plus" class="p-button-success p-mr-2" @click="openNew" title="Novo documento" />
             </template>
             <template #right>
                 <Button label="Bloquear selecionados" icon="pi pi-lock" class="p-button-warning p-mr-6" @click="blockSelecteds(true)" :disabled="!selectedDocuments || !selectedDocuments.length" />
@@ -82,10 +82,10 @@
                 {{ data.blocked ? "" : "Não" }}
               </template> 
             </Column> 
-            <Column>
+            <Column style="max-width:60px">
                 <template #body="{data}">
-                    <Button icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" @click="editDocument(data.uuid)" />
-                    <Button icon="pi pi-trash" class="p-button-rounded p-button-danger" @click="deleteDocument(data)" />
+                    <Button icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" @click="editDocument(data.uuid)" title="Editar" />
+                    <Button icon="pi pi-trash" class="p-button-rounded p-button-danger" @click="deleteDocument(data)" title="Excluir" />
                 </template>
             </Column>            
         </DataTable> 
@@ -97,7 +97,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import DocumentService from '@/service/DocumentService';
-import Response, { emptyResponse } from '@/model/Response';
+import PaginatedResponse, { emptyResponse } from '@/model/PaginatedResponse';
 import Query, { emptyQuery } from '@/model/Query';
 import Messages, { Message } from '@/model/Messages';
 import toQuery from '@/adapter/DataTableToQuery';
@@ -108,7 +108,7 @@ import { useToast } from "primevue/usetoast";
     
   }})
 export default class DocumentList extends Vue {
-  documents: Response | null = emptyResponse
+  documents: PaginatedResponse | null = emptyResponse
   documentService = new DocumentService()
   loading = false
   query: Query = emptyQuery
@@ -118,14 +118,13 @@ export default class DocumentList extends Vue {
   filterBlockeds = "all"
   toast: any
   selectedDocuments = []
+  identityMask = this.checkMask()
  
   created() {
-    console.log('created')
     this.toast = useToast();
   }  
 
   mounted() {
-    console.log('mounted');   
     this.findDocuments(); 
   }
 
@@ -133,9 +132,9 @@ export default class DocumentList extends Vue {
     this.loading = true;
     this.selectedDocuments = []
    
-    this.documentService.findDocumentsBy(this.query).then((data: Response | Messages) => {
+    this.documentService.findDocumentsBy(this.query).then((data: PaginatedResponse | Messages) => {
       if ("content" in data)
-        this.documents = data as Response;
+        this.documents = data as PaginatedResponse;
       else {
         this.documents = emptyResponse;
 
@@ -223,6 +222,14 @@ export default class DocumentList extends Vue {
             }
           });
   }
+
+  checkMask() {
+    return this.filterIdentityType == "cpf" ? "999.999.999-99" : "99.999.999/9999-99";
+  }
+
+  changedOptionIdentity(e: any) {
+    this.filterIdentityNumber = "";
+  }  
 }
 </script>
 
