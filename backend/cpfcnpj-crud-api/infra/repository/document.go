@@ -13,7 +13,11 @@ import (
 )
 
 const (
-	CollectionName = "document"
+	DocumentCollectionName      = "document"
+	DocumentFieldId             = "_id"
+	DocumentFieldName           = "name"
+	DocumentFieldIdentityNumber = "identityNumber"
+	DocumentFieldBlocked        = "blocked"
 )
 
 type DocumentRepositoryImpl struct {
@@ -42,7 +46,7 @@ func (repository *DocumentRepositoryImpl) Get(uuid string) (*model.Document, *ex
 
 	defer close()
 
-	var result = database().Collection(CollectionName).FindOne(ctx, bson.M{"_id": objectId})
+	var result = database().Collection(DocumentCollectionName).FindOne(ctx, bson.M{DocumentFieldId: objectId})
 	documentStructure := &DocumentStructure{}
 
 	err = result.Decode(documentStructure)
@@ -76,7 +80,7 @@ func (repository *DocumentRepositoryImpl) Delete(uuid string) *exception.Validat
 
 	defer close()
 
-	result, error := database().Collection(CollectionName).DeleteOne(ctx, bson.M{"_id": objectId})
+	result, error := database().Collection(DocumentCollectionName).DeleteOne(ctx, bson.M{DocumentFieldId: objectId})
 
 	if error != nil {
 		return exception.NewError(error.Error())
@@ -100,9 +104,9 @@ func (repository *DocumentRepositoryImpl) Insert(document *model.Document) *exce
 
 	defer close()
 
-	var _, errDb = database().Collection(CollectionName).InsertOne(ctx, bson.D{
-		{Key: "name", Value: document.Name},
-		{Key: "identityNumber", Value: document.Identity.Value()},
+	var _, errDb = database().Collection(DocumentCollectionName).InsertOne(ctx, bson.D{
+		{Key: DocumentFieldName, Value: document.Name},
+		{Key: DocumentFieldIdentityNumber, Value: document.Identity.Value()},
 	})
 
 	if errDb != nil {
@@ -128,8 +132,8 @@ func (repository *DocumentRepositoryImpl) Update(document *model.Document) *exce
 
 	defer close()
 
-	var result, errDb = database().Collection(CollectionName).UpdateByID(ctx, objectId, bson.D{
-		{"$set", bson.D{{"name", document.Name}, {"identityNumber", document.Identity.Value()}}},
+	var result, errDb = database().Collection(DocumentCollectionName).UpdateByID(ctx, objectId, bson.D{
+		{"$set", bson.D{{DocumentFieldName, document.Name}, {DocumentFieldIdentityNumber, document.Identity.Value()}}},
 	})
 
 	if errDb != nil {
@@ -155,8 +159,11 @@ func (repository *DocumentRepositoryImpl) BlockDocuments(uuids []string, block b
 		}
 		objectIds = append(objectIds, objectId)
 	}
-	filters["_id"] = bson.M{"$in": objectIds}
-	filters["blocked"] = !block
+	filters[DocumentFieldId] = bson.M{"$in": objectIds}
+	filters["$or"] = []interface{}{
+		bson.D{{DocumentFieldBlocked, !block}},
+		bson.D{{DocumentFieldBlocked, primitive.Null{}}},
+	}
 
 	var database, ctx, close, error = config.GetClient()
 
@@ -166,8 +173,8 @@ func (repository *DocumentRepositoryImpl) BlockDocuments(uuids []string, block b
 
 	defer close()
 
-	var result, errDb = database().Collection(CollectionName).UpdateMany(ctx, filters, bson.D{
-		{"$set", bson.D{{"blocked", block}}},
+	var result, errDb = database().Collection(DocumentCollectionName).UpdateMany(ctx, filters, bson.D{
+		{"$set", bson.D{{DocumentFieldBlocked, block}}},
 	})
 
 	if errDb != nil {

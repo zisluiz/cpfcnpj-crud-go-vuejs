@@ -471,7 +471,7 @@ type swaggerInfo struct {
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0",
 	Host:        "localhost:8080",
-	BasePath:    "/api/",
+	BasePath:    "",
 	Schemes:     []string{},
 	Title:       "Swagger CPF/CNPJ API",
 	Description: "This is a sample server celler server.",

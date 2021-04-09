@@ -15,5 +15,4 @@ export default class DocumentPage extends Vue {}
 </script>
 
 <style lang="scss">
-
 </style>

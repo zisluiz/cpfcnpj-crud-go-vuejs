@@ -1,5 +1,3 @@
-//db = new Mongo().getDB("cpfcnpj");
-
 let res = [
   db.document.drop(),
   db.createCollection('document'),

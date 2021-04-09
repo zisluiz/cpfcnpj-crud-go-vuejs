@@ -97,11 +97,11 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import DocumentService from '@/service/DocumentService';
+import BlockListService from '@/service/BlockListService';
 import PaginatedResponse, { emptyResponse } from '@/model/PaginatedResponse';
 import Query, { emptyQuery } from '@/model/Query';
 import Messages, { Message } from '@/model/Messages';
 import toQuery from '@/adapter/DataTableToQuery';
-import { useToast } from "primevue/usetoast";
 
 @Options({
   props: {
@@ -110,20 +110,16 @@ import { useToast } from "primevue/usetoast";
 export default class DocumentList extends Vue {
   documents: PaginatedResponse | null = emptyResponse
   documentService = new DocumentService()
+  blockListService = new BlockListService()
   loading = false
   query: Query = emptyQuery
   filterName = ""
   filterIdentityNumber = ""
   filterIdentityType = "cpf"
   filterBlockeds = "all"
-  toast: any
   selectedDocuments = []
   identityMask = this.checkMask()
  
-  created() {
-    this.toast = useToast();
-  }  
-
   mounted() {
     this.findDocuments(); 
   }
@@ -139,8 +135,7 @@ export default class DocumentList extends Vue {
         this.documents = emptyResponse;
 
         (data as Messages).messages.forEach((message: Message) => {
-            this.toast.add({severity: message.validationType == "error" ? "error" : "warn", 
-              summary:  message.validationType == "error" ? "Erro" : "Validação", detail:message.description, life: 10000});
+          this.$toast.add({severity:message.validationType == "error" ? "error" : "warn", summary: message.validationType == "error" ? "Erro" : "Validação", detail:message.description, life: 10000});          
         });
       }
       this.loading = false;
@@ -191,13 +186,11 @@ export default class DocumentList extends Vue {
           this.documentService.delete(document.uuid).then((data: null | Messages) => {
             if (data) {
               (data as Messages).messages.forEach((message: Message) => {
-                  this.toast.add({severity: message.validationType == "error" ? "error" : "warn", 
-                    summary:  message.validationType == "error" ? "Erro" : "Validação", detail:message.description, life: 10000});
+                  this.$toast.add({severity:message.validationType == "error" ? "error" : "warn", summary: message.validationType == "error" ? "Erro" : "Validação", detail:message.description, life: 10000});
               });
               this.loading = false;
             } else {
-              this.toast.add({severity: "success", 
-                    summary:  "Exclusão realizada com sucesso", detail: `Documento "${document.name}" excluído com sucesso!`, life: 10000});              
+              this.$toast.add({severity:'success', summary: 'Exclusão realizada com sucesso', detail:`Documento "${document.name}" excluído com sucesso!`, life: 10000});
               this.findDocuments()
             }
           });
@@ -206,21 +199,19 @@ export default class DocumentList extends Vue {
   }
 
   blockSelecteds(block: boolean) {
-          this.loading = true;
+    this.loading = true;
 
-          this.documentService.blockDocuments(this.selectedDocuments, block).then((data: null | Messages) => {
-            if (data) {
-              (data as Messages).messages.forEach((message: Message) => {
-                  this.toast.add({severity: message.validationType == "error" ? "error" : "warn", 
-                    summary:  message.validationType == "error" ? "Erro" : "Validação", detail:message.description, life: 10000});
-              });
-              this.loading = false;
-            } else {
-              this.toast.add({severity: "success", 
-                    summary:  "Lista atualizada com sucesso", detail: `Os documentos foram ${block ? "bloqueados" : "desbloqueados"} com sucesso!`, life: 10000});              
-              this.findDocuments()
-            }
-          });
+    this.blockListService.blockDocuments(this.selectedDocuments, block).then((data: null | Messages) => {
+      if (data) {
+        (data as Messages).messages.forEach((message: Message) => {
+          this.$toast.add({severity:message.validationType == "error" ? "error" : "warn", summary: message.validationType == "error" ? "Erro" : "Validação", detail:message.description, life: 10000});                    
+        });
+        this.loading = false;
+      } else {
+        this.$toast.add({severity:"success", summary: "Lista atualizada com sucesso", detail:`Os documentos foram ${block ? "bloqueados" : "desbloqueados"} com sucesso!`, life: 10000});                    
+        this.findDocuments()
+      }
+    });
   }
 
   checkMask() {

@@ -43,7 +43,6 @@ import { Options, Vue } from "vue-class-component";
 import DocumentService from '@/service/DocumentService';
 import Document from '@/model/Document';
 import Messages, {Message} from '@/model/Messages';
-import { useToast } from "primevue/usetoast";
 
 @Options({
   props: {
@@ -53,12 +52,7 @@ export default class DocumentForm extends Vue {
   documentService = new DocumentService()
   loading = false
   document: Document = this.resetData()
-  toast: any
   identityMask = this.checkMask()
- 
-  created() {
-    this.toast = useToast();
-  }  
 
   mounted() {
     if (this.$route.params.id) {
@@ -70,8 +64,7 @@ export default class DocumentForm extends Vue {
           this.resetData();
 
           (data as Messages).messages.forEach((message: Message) => {
-              this.toast.add({severity: message.validationType == "error" ? "error" : "warn", 
-                summary:  message.validationType == "error" ? "Erro" : "Validação", detail:message.description, life: 10000});
+              this.$toast.add({severity:message.validationType == "error" ? "error" : "warn", summary: message.validationType == "error" ? "Erro" : "Validação", detail:message.description, life: 10000});          
           });
         }
       });
@@ -104,13 +97,11 @@ export default class DocumentForm extends Vue {
     save.then((data: null | Messages) => {        
       if (data) {
         (data as Messages).messages.forEach((message: Message) => {
-            this.toast.add({severity: message.validationType == "error" ? "error" : "warn", 
-              summary:  message.validationType == "error" ? "Erro" : "Validação", detail:message.description, life: 10000});
+            this.$toast.add({severity:message.validationType == "error" ? "error" : "warn", summary: message.validationType == "error" ? "Erro" : "Validação", detail:message.description, life: 10000});          
         });
       } else {
-        this.toast.add({severity: "success", 
-            summary:  "Documento salvo com sucesso", detail: `Documento "${this.document.name}" salvo com sucesso!`, life: 10000});              
-       this.$router.push("/");
+        this.$toast.add({severity: "success", summary: "Documento salvo com sucesso", detail:`Documento "${this.document.name}" salvo com sucesso!`, life: 10000});                  
+        this.$router.push("/");
       }
     });
 

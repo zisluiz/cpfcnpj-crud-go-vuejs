@@ -28,6 +28,10 @@ type FilterField struct {
 	Value interface{} `json:"value"`
 }
 
+/*
+	Url params for sorts and filters come as json values inside string field "SortsJson" and "FiltersJson".
+	With this function, these string will be a array of objects.
+*/
 func (q *Query) ParseJsonParams() {
 	if len(q.FiltersJson) > 0 {
 		var filters []*FilterField

@@ -26,8 +26,6 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
 // @host localhost:8080
-// @BasePath /api/
-
 func main() {
 	serverStats := appMiddleware.NewStats()
 	// Echo instance

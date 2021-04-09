@@ -1,5 +1,8 @@
 import Query from "@/model/Query";
 
+/*
+Convert query object into query url params
+*/
 const toQuery = (params: any, query: Query) => {
   query.page = params.first;
   query.resultsPerPage = params.rows;

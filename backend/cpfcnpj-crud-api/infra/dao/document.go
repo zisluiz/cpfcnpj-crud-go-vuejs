@@ -53,7 +53,7 @@ func (daoImpl *DocumentDAOImpl) FindDocumentsBy(query *model.Query) *model.Resul
 
 		for _, filter := range query.Filters {
 			if reflect.TypeOf(filter.Value).Kind().String() == "string" {
-				filters[filter.Name] = primitive.Regex{Pattern: filter.Value.(string), Options: ""}
+				filters[filter.Name] = primitive.Regex{Pattern: filter.Value.(string), Options: "-i"}
 			} else {
 				filters[filter.Name] = filter.Value
 			}
@@ -76,7 +76,7 @@ func (daoImpl *DocumentDAOImpl) FindDocumentsBy(query *model.Query) *model.Resul
 		opts.SetSort(sorts)
 	}
 
-	collection := database().Collection(repository.CollectionName)
+	collection := database().Collection(repository.DocumentCollectionName)
 
 	totalCount, error := collection.CountDocuments(ctx, filters)
 
@@ -100,12 +100,12 @@ func (daoImpl *DocumentDAOImpl) FindDocumentsBy(query *model.Query) *model.Resul
 	for _, result := range results {
 		blocked := false
 
-		if result["blocked"] != nil {
-			blocked = result["blocked"].(bool)
+		if result[repository.DocumentFieldBlocked] != nil {
+			blocked = result[repository.DocumentFieldBlocked].(bool)
 		}
 
-		document, errorConstruct := factory.NewDocumentWithBlocked(result["_id"].(primitive.ObjectID).Hex(), result["name"].(string),
-			result["identityNumber"].(string), blocked)
+		document, errorConstruct := factory.NewDocumentWithBlocked(result[repository.DocumentFieldId].(primitive.ObjectID).Hex(), result[repository.DocumentFieldName].(string),
+			result[repository.DocumentFieldIdentityNumber].(string), blocked)
 
 		if errorConstruct != nil {
 			return &model.Result{Validations: errorConstruct}

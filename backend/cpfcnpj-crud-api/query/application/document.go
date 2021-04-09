@@ -15,6 +15,7 @@ func (app *DocumentQueryApplication) FindDocumentsBy(query *model.Query) *data.R
 	if query.Filters != nil {
 		for _, filter := range query.Filters {
 			if filter.Name == "identityNumber" {
+				//only for test if input identity number is valid
 				_, err := factory.NewIdentity(filter.Value.(string))
 
 				if err != nil {

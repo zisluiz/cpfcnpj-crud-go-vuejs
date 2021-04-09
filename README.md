@@ -57,6 +57,8 @@ Possible responses from api methods:
 docker-compose up
 ```
 
+Wait 1~2min on first up, until app comes up
+
 ## How to update swagger docs
 
 ```
