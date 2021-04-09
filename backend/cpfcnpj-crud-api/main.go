@@ -36,6 +36,9 @@ func main() {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost"},
+	}))
 	e.Use(serverStats.Process)
 
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
@@ -47,6 +50,8 @@ func main() {
 	// Api
 	var group = e.Group("/api")
 	routes.BindRoute(group)
+	routes.BindQueryRoute(group)
+	routes.BindRouteBlock(group)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":" + os.Getenv("API_PORT")))

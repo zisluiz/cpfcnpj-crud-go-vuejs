@@ -3,7 +3,7 @@ package model
 import (
 	"testing"
 
-	"zisluiz.com/cpfcnpj-crud-api/application"
+	"zisluiz.com/cpfcnpj-crud-api/command/application"
 	"zisluiz.com/cpfcnpj-crud-api/command/domain/model"
 	"zisluiz.com/cpfcnpj-crud-api/infra/data"
 	"zisluiz.com/cpfcnpj-crud-api/test/mock"

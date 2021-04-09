@@ -25,3 +25,13 @@ func NewDocument(uuid string, name string, identityNumber string) (*model.Docume
 
 	return document, validations
 }
+
+func NewDocumentWithBlocked(uuid string, name string, identityNumber string, blocked bool) (*model.Document, *exception.Validations) {
+	document, validations := NewDocument(uuid, name, identityNumber)
+
+	if document != nil {
+		document.Blocked = blocked
+	}
+
+	return document, validations
+}

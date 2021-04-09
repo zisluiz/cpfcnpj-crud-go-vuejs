@@ -16,6 +16,12 @@ replace zisluiz.com/cpfcnpj-crud-api/command/domain/repository => ../command/dom
 
 replace zisluiz.com/cpfcnpj-crud-api/command/domain/factory => ../command/domain/factory
 
+replace zisluiz.com/cpfcnpj-crud-api/query/application => ../query/application
+
+replace zisluiz.com/cpfcnpj-crud-api/query/model => ../query/model
+
+replace zisluiz.com/cpfcnpj-crud-api/query/dao => ../query/dao
+
 replace zisluiz.com/cpfcnpj-crud-api/infra/config => ../infra/config
 
 replace zisluiz.com/cpfcnpj-crud-api/infra/data => ../infra/data

@@ -1,11 +1,17 @@
 package factory
 
 import (
+	"regexp"
+
 	"zisluiz.com/cpfcnpj-crud-api/command/domain/exception"
 	"zisluiz.com/cpfcnpj-crud-api/command/domain/model"
 )
 
 func NewIdentity(value string) (model.IdentityNumber, *exception.Validations) {
+	if len(value) > 0 {
+		reg, _ := regexp.Compile(`[^\w]`)
+		value = reg.ReplaceAllString(value, "")
+	}
 	if len(value) >= 14 {
 		return NewIdentityCnpj(value)
 	}

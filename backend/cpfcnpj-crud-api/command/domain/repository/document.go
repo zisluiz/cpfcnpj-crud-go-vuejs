@@ -10,4 +10,5 @@ type DocumentRepository interface {
 	Update(document *model.Document) *exception.Validations
 	Get(uuid string) (*model.Document, *exception.Validations)
 	Delete(uuid string) *exception.Validations
+	BlockDocuments(uuids []string, block bool) *exception.Validations
 }

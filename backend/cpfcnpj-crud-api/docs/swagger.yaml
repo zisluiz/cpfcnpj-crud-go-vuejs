@@ -44,7 +44,71 @@ info:
   title: Swagger CPF/CNPJ API
   version: "1.0"
 paths:
+  /api/blocklist:
+    put:
+      consumes:
+      - application/json
+      description: add by json document
+      parameters:
+      - description: Document ids
+        in: body
+        name: ids
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/data.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/data.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/data.Response'
+      summary: Block a list of documents
+      tags:
+      - documents
   /api/documents:
+    get:
+      consumes:
+      - application/json
+      description: add by json document
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/application.DocumentViewModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/data.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/data.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/data.Response'
+      summary: Get an document
+      tags:
+      - documents
     post:
       consumes:
       - application/json
@@ -165,6 +229,38 @@ paths:
           schema:
             $ref: '#/definitions/data.Response'
       summary: Create an document
+      tags:
+      - documents
+  /api/unblocklist:
+    put:
+      consumes:
+      - application/json
+      description: add by json document
+      parameters:
+      - description: Document ids
+        in: body
+        name: ids
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/data.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/data.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/data.Response'
+      summary: Unblocklist  a list of documents
       tags:
       - documents
   /stats:

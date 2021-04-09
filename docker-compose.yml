@@ -53,15 +53,18 @@ services:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=root
       - ME_CONFIG_MONGODB_ADMINPASSWORD=123456
 
-  #web:
-  #  image: node:15.11.0-alpine
-  #  container_name: atelier-app
-  #  working_dir: /home/node/app
-  #  volumes:
-  #    - /home/zis/dev/code/atelier-manager-node/frontend/atelier-react-app:/home/node/app
-  #  ports:
-  #    - "80:3000"
-  #    - "9230:9230"
-  #  command: sh -c "npm install && npm run dev"
-  #  environment:
-  #    - TZ=UTC+3
+  app:
+    image: node:15.11.0-alpine
+    container_name: cpfcnpj-crud-app
+    working_dir: /home/node/app
+    depends_on:
+      - api
+    volumes:
+      - ./frontend/cpfcnpj-crud-app:/home/node/app
+    ports:
+      - "80:80"
+    command: sh -c "npm install && npm run serve"
+    environment:
+      - TZ=UTC+3
+      - NODE_ENV=development
+      - VUE_APP_API_HOST=http://localhost:8080

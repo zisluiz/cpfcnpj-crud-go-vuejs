@@ -1,21 +1,30 @@
 package application
 
 import (
-	"zisluiz.com/cpfcnpj-crud-api/command/domain/exception"
+	"zisluiz.com/cpfcnpj-crud-api/command/domain/factory"
 	"zisluiz.com/cpfcnpj-crud-api/infra/data"
+	"zisluiz.com/cpfcnpj-crud-api/query/dao"
+	"zisluiz.com/cpfcnpj-crud-api/query/model"
 )
 
-func GetDocument(uuid string) *data.Response {
-	if len(uuid) == 0 {
-		return data.ResponseError(exception.NewValidation("Parameter \"id\" is required!"))
+type DocumentQueryApplication struct {
+	DocumentDAO dao.DocumentDAO
+}
+
+func (app *DocumentQueryApplication) FindDocumentsBy(query *model.Query) *data.Response {
+	if query.Filters != nil {
+		for _, filter := range query.Filters {
+			if filter.Name == "identityNumber" {
+				_, err := factory.NewIdentity(filter.Value.(string))
+
+				if err != nil {
+					return data.ResponseError(err)
+				}
+			}
+		}
 	}
 
-	var document, validations = app.DocumentRepository.Get(uuid)
+	var result = app.DocumentDAO.FindDocumentsBy(query)
 
-	if validations != nil {
-		return data.ResponseError(validations)
-	}
-
-	return data.ResponseOk(&DocumentViewModel{IdentityType: document.Identity.Type(),
-		EditDocumentInputModel: EditDocumentInputModel{Uuid: document.Uuid, NewDocumentInputModel: NewDocumentInputModel{Name: document.Name, IdentityNumber: document.Identity.Value()}}})
+	return data.ResponseOk(result)
 }

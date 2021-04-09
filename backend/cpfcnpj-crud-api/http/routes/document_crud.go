@@ -81,6 +81,9 @@ func putDocument(c echo.Context) error {
 		return adapter.ToHttpResponse(c, data.ResponseError(exception.NewError(err.Error())))
 	}
 
+	id := c.Param("id")
+	input.Uuid = id
+
 	var response = documentApplication.Update(input)
 	return adapter.ToHttpResponse(c, response)
 }

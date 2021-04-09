@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	collectionName = "document"
+	CollectionName = "document"
 )
 
 type DocumentRepositoryImpl struct {
@@ -42,7 +42,7 @@ func (repository *DocumentRepositoryImpl) Get(uuid string) (*model.Document, *ex
 
 	defer close()
 
-	var result = database().Collection(collectionName).FindOne(ctx, bson.M{"_id": objectId})
+	var result = database().Collection(CollectionName).FindOne(ctx, bson.M{"_id": objectId})
 	documentStructure := &DocumentStructure{}
 
 	err = result.Decode(documentStructure)
@@ -76,7 +76,7 @@ func (repository *DocumentRepositoryImpl) Delete(uuid string) *exception.Validat
 
 	defer close()
 
-	result, error := database().Collection(collectionName).DeleteOne(ctx, bson.M{"_id": objectId})
+	result, error := database().Collection(CollectionName).DeleteOne(ctx, bson.M{"_id": objectId})
 
 	if error != nil {
 		return exception.NewError(error.Error())
@@ -100,7 +100,7 @@ func (repository *DocumentRepositoryImpl) Insert(document *model.Document) *exce
 
 	defer close()
 
-	var _, errDb = database().Collection(collectionName).InsertOne(ctx, bson.D{
+	var _, errDb = database().Collection(CollectionName).InsertOne(ctx, bson.D{
 		{Key: "name", Value: document.Name},
 		{Key: "identityNumber", Value: document.Identity.Value()},
 	})
@@ -128,17 +128,54 @@ func (repository *DocumentRepositoryImpl) Update(document *model.Document) *exce
 
 	defer close()
 
-	var result, errDb = database().Collection(collectionName).UpdateByID(ctx, bson.M{"_id": objectId}, bson.D{
-		{Key: "name", Value: document.Name},
-		{Key: "identityNumber", Value: document.Identity.Value()},
+	var result, errDb = database().Collection(CollectionName).UpdateByID(ctx, objectId, bson.D{
+		{"$set", bson.D{{"name", document.Name}, {"identityNumber", document.Identity.Value()}}},
 	})
 
 	if errDb != nil {
 		return exception.NewError(errDb.Error())
 	}
 
-	if result.ModifiedCount == 0 {
+	if result.MatchedCount == 0 {
 		return exception.NewError("No document found for uuid " + document.Uuid + ".")
+	}
+
+	return nil
+}
+
+func (repository *DocumentRepositoryImpl) BlockDocuments(uuids []string, block bool) *exception.Validations {
+	log.Printf("Preparing to block some documents.")
+
+	var objectIds = []primitive.ObjectID{}
+	filters := make(map[string]interface{})
+	for _, uuid := range uuids {
+		objectId, err := primitive.ObjectIDFromHex(uuid)
+		if err != nil {
+			return exception.NewError("Invalid id value! Id: " + uuid)
+		}
+		objectIds = append(objectIds, objectId)
+	}
+	filters["_id"] = bson.M{"$in": objectIds}
+	filters["blocked"] = !block
+
+	var database, ctx, close, error = config.GetClient()
+
+	if error != nil {
+		return exception.NewError(error.Error())
+	}
+
+	defer close()
+
+	var result, errDb = database().Collection(CollectionName).UpdateMany(ctx, filters, bson.D{
+		{"$set", bson.D{{"blocked", block}}},
+	})
+
+	if errDb != nil {
+		return exception.NewError(errDb.Error())
+	}
+
+	if result.MatchedCount == 0 {
+		return exception.NewError("No one document has blocked/unblocked!")
 	}
 
 	return nil

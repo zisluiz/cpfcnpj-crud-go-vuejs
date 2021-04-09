@@ -1,8 +1,12 @@
 package exception
 
 type rawMessage struct {
-	ValidationType string
-	Description    string
+	ValidationType string `json:"validationType"`
+	Description    string `json:"description"`
+}
+
+type rawMessages struct {
+	Messages []*rawMessage `json:"messages"`
 }
 
 type message interface {
@@ -50,14 +54,14 @@ func (a *Validations) Merge(validations *Validations) {
 	a.Messages = append(a.Messages, validations.Messages...)
 }
 
-func (a *Validations) ToArrayRaw() []rawMessage {
-	raw := []rawMessage{}
+func (a *Validations) ToArrayRaw() *rawMessages {
+	rawMessages := rawMessages{Messages: []*rawMessage{}}
 
 	for _, message := range a.Messages {
-		raw = append(raw, rawMessage{ValidationType: message.ValidationType(), Description: message.Description()})
+		rawMessages.Messages = append(rawMessages.Messages, &rawMessage{ValidationType: message.ValidationType(), Description: message.Description()})
 	}
 
-	return raw
+	return &rawMessages
 }
 
 func NewValidations() *Validations {
